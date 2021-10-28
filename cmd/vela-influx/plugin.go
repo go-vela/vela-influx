@@ -8,32 +8,33 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-type (
-	// Plugin struct represents fields user can present to plugin
-	Plugin struct {
-		// config arguments loaded for the plugin
-		Config *Config
-		// write arguments loaded for the plugin
-		Write *Write
-	}
-)
+// Plugin represents the configuration loaded for the plugin.
+type Plugin struct {
+	// config arguments loaded for the plugin
+	Config *Config
+	// write arguments loaded for the plugin
+	Write *Write
+}
 
 // Exec formats and runs the commands for sending metrics to InfluxDB.
 func (p *Plugin) Exec() error {
 	logrus.Debug("running plugin with provided configuration")
 
-	// create new Influx client from config configuration
+	// create new Influx client from configuration
 	client, err := p.Config.New()
 	if err != nil {
 		return err
 	}
+
+	// defer closing client after usage
+	defer client.Close()
 
 	logrus.Info("writing metric")
 
 	return p.Write.Exec(client, p.Config.Database)
 }
 
-// Validate function to validate plugin configuration
+// Validate function to validate plugin configuration.
 func (p *Plugin) Validate() error {
 	logrus.Debug("validating plugin configuration")
 

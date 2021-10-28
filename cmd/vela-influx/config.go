@@ -12,15 +12,15 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-// Config represents the plugin configuration for Kubernetes information.
+// Config represents the plugin configuration for InfluxDB information.
 type Config struct {
-	// is the address to an influx server
+	// the address to the Influx instance
 	Addr string
-	// is the database for interaction on the server
+	// the database to send data on Influx instance
 	Database string
-	// is the user password for authenticating to server
+	// the user password for authenticating to Influx instance
 	Password string
-	// is the user name for authenticating to server
+	// the user name for authenticating to Influx instance
 	Username string
 }
 
@@ -29,6 +29,8 @@ func (c *Config) New() (influx.Client, error) {
 	logrus.Trace("creating new influx client from plugin configuration")
 
 	// create config for InfluxDB client
+	//
+	// https://pkg.go.dev/github.com/influxdata/influxdb1-client/v2#HTTPConfig
 	conf := influx.HTTPConfig{
 		Addr:     c.Addr,
 		Password: c.Password,
@@ -36,12 +38,12 @@ func (c *Config) New() (influx.Client, error) {
 	}
 
 	// create new InfluxDB client
+	//
+	// https://pkg.go.dev/github.com/influxdata/influxdb1-client/v2#NewHTTPClient
 	client, err := influx.NewHTTPClient(conf)
 	if err != nil {
 		return nil, err
 	}
-
-	defer client.Close()
 
 	return client, nil
 }
@@ -50,12 +52,12 @@ func (c *Config) New() (influx.Client, error) {
 func (c *Config) Validate() error {
 	logrus.Trace("validating config configuration")
 
-	// verify Addr is provided
+	// verify influx address is provided
 	if len(c.Addr) == 0 {
 		return fmt.Errorf("no config addr provided")
 	}
 
-	// verify Database is provided
+	// verify influx database is provided
 	if len(c.Database) == 0 {
 		return fmt.Errorf("no config database provided")
 	}

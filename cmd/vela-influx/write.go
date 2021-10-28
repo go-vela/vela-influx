@@ -22,7 +22,7 @@ type (
 		Fields *Field
 		// raw input of fields provided for plugin
 		RawFields string
-		// raw input of fields provided for plugin
+		// raw input of tags provided for plugin
 		RawTags string
 		// set of tags to be created with the data point
 		Tags *Tag
@@ -39,23 +39,29 @@ type (
 	}
 )
 
-// Exec formats and runs the commands for removing artifacts in Artifactory.
+// Exec formats and runs the commands for sending data to Influx.
 func (w *Write) Exec(client influx.Client, database string) error {
 	logrus.Trace("running delete with provided configuration")
 
-	// Create a new point batch
+	// create batch of data points to send to the database
+	//
+	// https://pkg.go.dev/github.com/influxdata/influxdb1-client/v2#NewBatchPoints
 	bp, _ := influx.NewBatchPoints(influx.BatchPointsConfig{
 		Database: database,
 	})
 
+	// create new data point to add to the batch
+	//
+	// https://pkg.go.dev/github.com/influxdata/influxdb1-client/v2#NewPoint
 	pt, err := influx.NewPoint(w.Name, w.Tags.Data, w.Fields.Data, time.Now())
 	if err != nil {
 		return fmt.Errorf("unable to create point: %w", err)
 	}
 
-	// add the point to request
+	// add the data point to the batch to send to the database
 	bp.AddPoint(pt)
 
+	// send the batch point to the database
 	return client.Write(bp)
 }
 
@@ -96,7 +102,7 @@ func (w *Write) Unmarshal() error {
 	return nil
 }
 
-// Validate verifies the Config is properly configured.
+// Validate verifies the Write is properly configured.
 func (w *Write) Validate() error {
 	logrus.Trace("validating write configuration")
 
