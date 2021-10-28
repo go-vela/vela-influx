@@ -59,11 +59,60 @@ func main() {
 	app.Flags = []cli.Flag{
 
 		&cli.StringFlag{
-			EnvVars:  []string{"PARAMETER_LOG_LEVEL", "DOWNSTREAM_LOG_LEVEL"},
-			FilePath: "/vela/parameters/downstream/log_level,/vela/secrets/downstream/log_level",
+			EnvVars:  []string{"PARAMETER_LOG_LEVEL", "INFLUX_LOG_LEVEL"},
+			FilePath: "/vela/parameters/influx/log_level,/vela/secrets/influx/log_level",
 			Name:     "log.level",
 			Usage:    "set log level - options: (trace|debug|info|warn|error|fatal|panic)",
 			Value:    "info",
+		},
+
+		// Config Flags
+
+		&cli.StringFlag{
+			EnvVars:  []string{"PARAMETER_ADDR", "INFLUX_ADDR"},
+			FilePath: string("/vela/parameters/influx/addr,/vela/secrets/influx/addr"),
+			Name:     "config.addr",
+			Usage:    "Influx instance to communicate with",
+		},
+		&cli.StringFlag{
+			EnvVars:  []string{"PARAMETER_DATABASE", "INFLUX_DATABASE"},
+			FilePath: string("/vela/parameters/influx/database,/vela/secrets/influx/database"),
+			Name:     "config.database",
+			Usage:    "name of database within Influx instance",
+		},
+		&cli.StringFlag{
+			EnvVars:  []string{"PARAMETER_PASSWORD", "INFLUX_PASSWORD"},
+			FilePath: string("/vela/parameters/influx/password,/vela/secrets/influx/password"),
+			Name:     "config.password",
+			Usage:    "user password for communication with the Influx instance",
+		},
+		&cli.StringFlag{
+			EnvVars:  []string{"PARAMETER_USERNAME", "INFLUX_USERNAME"},
+			FilePath: string("/vela/parameters/influx/username,/vela/secrets/influx/username"),
+			Name:     "config.username",
+			Usage:    "user name for communication with the Influx instance",
+		},
+
+		// Write Flags
+
+		&cli.StringFlag{
+			EnvVars:  []string{"PARAMETER_NAME", "INFLUX_NAME"},
+			FilePath: string("/vela/parameters/influx/name,/vela/secrets/influx/name"),
+			Name:     "write.name",
+			Usage:    "name of the metrics to be created",
+			Value:    "build_metrics",
+		},
+		&cli.StringFlag{
+			EnvVars:  []string{"PARAMETER_FIELDS", "INFLUX_FIELDS"},
+			FilePath: string("/vela/parameters/influx/name,/vela/secrets/influx/name"),
+			Name:     "write.fields",
+			Usage:    "set of fields to be created with the data point",
+		},
+		&cli.StringFlag{
+			EnvVars:  []string{"PARAMETER_TAGS", "INFLUX_TAGS"},
+			FilePath: string("/vela/parameters/influx/tags,/vela/secrets/influx/tags"),
+			Name:     "write.tags",
+			Usage:    "set of tags to be created with the data point",
 		},
 	}
 
@@ -101,5 +150,27 @@ func run(c *cli.Context) error {
 		"registry": "https://hub.docker.com/r/target/vela-influx",
 	}).Info("Vela Influx Plugin")
 
-	return nil
+	// create the plugin
+	p := &Plugin{
+		Config: &Config{
+			Addr:     c.String("config.addr"),
+			Database: c.String("config.database"),
+			Password: c.String("config.password"),
+			Username: c.String("config.username"),
+		},
+		Write: &Write{
+			Name:      c.String("write.name"),
+			RawFields: c.String("write.fields"),
+			RawTags:   c.String("write.tags"),
+		},
+	}
+
+	// validate the plugin
+	err := p.Validate()
+	if err != nil {
+		return err
+	}
+
+	// execute the plugin
+	return p.Exec()
 }
