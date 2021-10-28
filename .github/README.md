@@ -3,7 +3,7 @@
 [![license](https://img.shields.io/crates/l/gl.svg)](../LICENSE)
 [![GoDoc](https://godoc.org/github.com/go-vela/vela-influx?status.svg)](https://godoc.org/github.com/go-vela/vela-influx)
 [![Go Report Card](https://goreportcard.com/badge/go-vela/vela-influx)](https://goreportcard.com/report/go-vela/vela-influx)
-[![codecov](https://codecov.io/gh/go-vela/vela-influx/branch/master/graph/badge.svg)](https://codecov.io/gh/go-vela/vela-influx)
+[![codecov](https://codecov.io/gh/go-vela/vela-influx/branch/main/graph/badge.svg)](https://codecov.io/gh/go-vela/vela-influx)
 
 Vela plugin designed for sending data to an [InfluxDB](https://www.influxdata.com/).
 
