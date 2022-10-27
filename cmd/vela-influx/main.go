@@ -146,7 +146,7 @@ func run(c *cli.Context) error {
 
 	logrus.WithFields(logrus.Fields{
 		"code":     "https://github.com/go-vela/vela-influx",
-		"docs":     "https://go-vela.github.io/docs/plugins/registry/influx",
+		"docs":     "https://go-vela.github.io/docs/plugins/registry/pipeline/influx",
 		"registry": "https://hub.docker.com/r/target/vela-influx",
 	}).Info("Vela Influx Plugin")
 
