@@ -5,8 +5,8 @@ github.com/cpuguy83/go-md2man/v2 v2.0.2/go.mod h1:tgQtvFlXSQOSOSIRvRPT7W67SCa46t
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
-github.com/go-vela/types v0.17.0 h1:nvKBbNO8BSiLtYPMScT0XWosGqEWX85UKSkkclb2DVA=
-github.com/go-vela/types v0.17.0/go.mod h1:6KoRkvXMw9DkAcLdtI7PxPqMlT2Bl0DiigQamLGGjwo=
+github.com/go-vela/types v0.19.2 h1:xU61CX2jdMuBCtLOg8a7Z2aEWYM1zZt37Ygx1oHGbjM=
+github.com/go-vela/types v0.19.2/go.mod h1:ZvDjYCKU36yJS3sLxPLCny/HLF1U6YtlOienzv/cXB4=
 github.com/influxdata/influxdb1-client v0.0.0-20220302092344-a9ab5670611c h1:qSHzRbhzK8RdXOsAdfDgO49TtqC1oZ+acxPrkfTxcCs=
 github.com/influxdata/influxdb1-client v0.0.0-20220302092344-a9ab5670611c/go.mod h1:qj24IKcXYK6Iy9ceXlo3Tc+vtHo9lIhSX5JddghvEPo=
 github.com/joho/godotenv v1.4.0 h1:3l4+N6zfMWnkbPEXKng2o2/MR5mSwTrBih4ZEkkz1lg=
