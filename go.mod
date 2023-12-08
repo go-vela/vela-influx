@@ -14,12 +14,8 @@ require (
 )
 
 require (
-	github.com/buildkite/yaml v0.0.0-20181016232759-0caa5f0796e3 // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.3 // indirect
-	github.com/drone/envsubst v1.0.3 // indirect
-	github.com/ghodss/yaml v1.0.0 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/xrash/smetrics v0.0.0-20201216005158-039620a65673 // indirect
 	golang.org/x/sys v0.15.0 // indirect
-	gopkg.in/yaml.v2 v2.3.0 // indirect
 )
