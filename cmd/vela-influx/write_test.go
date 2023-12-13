@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-func TestInflux_Write_Exec(t *testing.T) {
+func TestInflux_Write_Exec(_ *testing.T) {
 	// TODO Write this test
 }
 
