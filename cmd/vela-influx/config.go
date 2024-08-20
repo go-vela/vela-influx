@@ -6,7 +6,6 @@ import (
 	"fmt"
 
 	influx "github.com/influxdata/influxdb1-client/v2"
-
 	"github.com/sirupsen/logrus"
 )
 
