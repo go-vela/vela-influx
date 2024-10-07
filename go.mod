@@ -1,10 +1,10 @@
 module github.com/go-vela/vela-influx
 
-go 1.23.0
+go 1.23.2
 
 require (
-	github.com/Masterminds/semver/v3 v3.2.1
-	github.com/go-vela/types v0.24.0
+	github.com/Masterminds/semver/v3 v3.3.0
+	github.com/go-vela/types v0.25.1
 	github.com/influxdata/influxdb1-client v0.0.0-20220302092344-a9ab5670611c
 	github.com/joho/godotenv v1.5.1
 	github.com/sirupsen/logrus v1.9.3
