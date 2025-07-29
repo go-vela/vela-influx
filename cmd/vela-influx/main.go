@@ -3,13 +3,14 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
+	"net/mail"
 	"os"
-	"time"
 
 	"github.com/sirupsen/logrus"
-	"github.com/urfave/cli/v2"
+	"github.com/urfave/cli/v3"
 
 	_ "github.com/joho/godotenv/autoload"
 
@@ -30,97 +31,123 @@ func main() {
 	fmt.Fprintf(os.Stdout, "%s\n", string(bytes))
 
 	// create new CLI application
-	app := cli.NewApp()
-
 	// Plugin Information
-
-	app.Name = "vela-influx"
-	app.HelpName = "vela-influx"
-	app.Usage = "Vela Influx plugin for for sending data to an InfluxDB"
-	app.Copyright = "Copyright 2021 Target Brands, Inc. All rights reserved."
-	app.Authors = []*cli.Author{
-		{
-			Name:  "Vela Admins",
-			Email: "vela@target.com",
+	cmd := cli.Command{
+		Name:      "vela-influx",
+		Usage:     "Vela Influx plugin for for sending data to an InfluxDB",
+		Copyright: "Copyright 2021 Target Brands, Inc. All rights reserved.",
+		Authors: []any{
+			&mail.Address{
+				Name:    "Vela Admins",
+				Address: "vela@target.com",
+			},
 		},
+		Version: v.Semantic(),
+		Action:  run,
 	}
-
-	// Plugin Metadata
-
-	app.Action = run
-	app.Compiled = time.Now()
-	app.Version = v.Semantic()
 
 	// Plugin Flags
 
-	app.Flags = []cli.Flag{
+	cmd.Flags = []cli.Flag{
 
 		&cli.StringFlag{
-			EnvVars:  []string{"PARAMETER_LOG_LEVEL", "INFLUX_LOG_LEVEL"},
-			FilePath: "/vela/parameters/influx/log_level,/vela/secrets/influx/log_level",
-			Name:     "log.level",
-			Usage:    "set log level - options: (trace|debug|info|warn|error|fatal|panic)",
-			Value:    "info",
+			Name:  "log.level",
+			Usage: "set log level - options: (trace|debug|info|warn|error|fatal|panic)",
+			Value: "info",
+			Sources: cli.NewValueSourceChain(
+				cli.EnvVar("PARAMETER_LOG_LEVEL"),
+				cli.EnvVar("INFLUX_LOG_LEVEL"),
+				cli.File("/vela/parameters/influx/log_level"),
+				cli.File("/vela/secrets/influx/log_level"),
+			),
 		},
 
 		// Config Flags
 
 		&cli.StringFlag{
-			EnvVars:  []string{"PARAMETER_ADDR", "INFLUX_ADDR"},
-			FilePath: string("/vela/parameters/influx/addr,/vela/secrets/influx/addr"),
-			Name:     "config.addr",
-			Usage:    "Influx instance to communicate with",
+			Name:  "config.addr",
+			Usage: "Influx instance to communicate with",
+			Sources: cli.NewValueSourceChain(
+				cli.EnvVar("PARAMETER_ADDR"),
+				cli.EnvVar("INFLUX_ADDR"),
+				cli.File("/vela/parameters/influx/addr"),
+				cli.File("/vela/secrets/influx/addr"),
+			),
 		},
 		&cli.StringFlag{
-			EnvVars:  []string{"PARAMETER_DATABASE", "INFLUX_DATABASE"},
-			FilePath: string("/vela/parameters/influx/database,/vela/secrets/influx/database"),
-			Name:     "config.database",
-			Usage:    "name of database within Influx instance",
+			Name:  "config.database",
+			Usage: "name of database within Influx instance",
+			Sources: cli.NewValueSourceChain(
+				cli.EnvVar("PARAMETER_DATABASE"),
+				cli.EnvVar("INFLUX_DATABASE"),
+				cli.File("/vela/parameters/influx/database"),
+				cli.File("/vela/secrets/influx/database"),
+			),
 		},
 		&cli.StringFlag{
-			EnvVars:  []string{"PARAMETER_PASSWORD", "INFLUX_PASSWORD"},
-			FilePath: string("/vela/parameters/influx/password,/vela/secrets/influx/password"),
-			Name:     "config.password",
-			Usage:    "user password for communication with the Influx instance",
+			Name:  "config.password",
+			Usage: "user password for communication with the Influx instance",
+			Sources: cli.NewValueSourceChain(
+				cli.EnvVar("PARAMETER_PASSWORD"),
+				cli.EnvVar("INFLUX_PASSWORD"),
+				cli.File("/vela/parameters/influx/password"),
+				cli.File("/vela/secrets/influx/password"),
+			),
 		},
 		&cli.StringFlag{
-			EnvVars:  []string{"PARAMETER_USERNAME", "INFLUX_USERNAME"},
-			FilePath: string("/vela/parameters/influx/username,/vela/secrets/influx/username"),
-			Name:     "config.username",
-			Usage:    "user name for communication with the Influx instance",
+			Name:  "config.username",
+			Usage: "user name for communication with the Influx instance",
+			Sources: cli.NewValueSourceChain(
+				cli.EnvVar("PARAMETER_USERNAME"),
+				cli.EnvVar("INFLUX_USERNAME"),
+				cli.File("/vela/parameters/influx/username"),
+				cli.File("/vela/secrets/influx/username"),
+			),
 		},
 
 		// Write Flags
 
 		&cli.StringFlag{
-			EnvVars:  []string{"PARAMETER_NAME", "INFLUX_NAME"},
-			FilePath: string("/vela/parameters/influx/name,/vela/secrets/influx/name"),
-			Name:     "write.name",
-			Usage:    "name of the metrics to be created",
-			Value:    "build_metrics",
+			Name:  "write.name",
+			Usage: "name of the metrics to be created",
+			Value: "build_metrics",
+			Sources: cli.NewValueSourceChain(
+				cli.EnvVar("PARAMETER_NAME"),
+				cli.EnvVar("INFLUX_NAME"),
+				cli.File("/vela/parameters/influx/name"),
+				cli.File("/vela/secrets/influx/name"),
+			),
 		},
 		&cli.StringFlag{
-			EnvVars:  []string{"PARAMETER_FIELDS", "INFLUX_FIELDS"},
-			FilePath: string("/vela/parameters/influx/name,/vela/secrets/influx/name"),
-			Name:     "write.fields",
-			Usage:    "set of fields to be created with the data point",
+			Name:  "write.fields",
+			Usage: "set of fields to be created with the data point",
+			Sources: cli.NewValueSourceChain(
+				cli.EnvVar("PARAMETER_FIELDS"),
+				cli.EnvVar("INFLUX_FIELDS"),
+				cli.File("/vela/parameters/influx/fields"),
+				cli.File("/vela/secrets/influx/fields"),
+			),
 		},
 		&cli.StringFlag{
-			EnvVars:  []string{"PARAMETER_TAGS", "INFLUX_TAGS"},
-			FilePath: string("/vela/parameters/influx/tags,/vela/secrets/influx/tags"),
-			Name:     "write.tags",
-			Usage:    "set of tags to be created with the data point",
+			Name:  "write.tags",
+			Usage: "set of tags to be created with the data point",
+			Sources: cli.NewValueSourceChain(
+				cli.EnvVar("PARAMETER_TAGS"),
+				cli.EnvVar("INFLUX_TAGS"),
+				cli.File("/vela/parameters/influx/tags"),
+				cli.File("/vela/secrets/influx/tags"),
+			),
 		},
 	}
 
-	err = app.Run(os.Args)
+	err = cmd.Run(context.Background(), os.Args)
 	if err != nil {
 		logrus.Fatal(err)
 	}
 }
 
 // run executes the plugin based off the configuration provided.
-func run(c *cli.Context) error {
+func run(_ context.Context, c *cli.Command) error {
 	// set the log level for the plugin
 	switch c.String("log.level") {
 	case "t", "trace", "Trace", "TRACE":
